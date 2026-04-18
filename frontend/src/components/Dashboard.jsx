@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useUpcomingMatches } from "../hooks/useSportsData";
 import MatchCard from "./MatchCard";
 import StandingsTable from "./StandingsTable";
+import NewsTab from "./NewsTab";
+import MatchModal from "./MatchModal";
 
 const LEAGUES = [
   { api_id: 71,  name: "Brasileirão" },
@@ -31,6 +33,7 @@ function groupByDate(matches) {
 export default function Dashboard() {
   const [sport, setSport]         = useState(null);
   const [activeTab, setActiveTab] = useState("matches");
+  const [selectedMatch, setSelectedMatch] = useState(null);
   const { data, loading, error, refetch } = useUpcomingMatches(7, sport);
 
   const grouped = groupByDate(data);
@@ -55,6 +58,12 @@ export default function Dashboard() {
           onClick={() => setActiveTab("standings")}
         >
           Classificações
+        </button>
+        <button
+          className={activeTab === "news" ? "tab tab--active" : "tab"}
+          onClick={() => setActiveTab("news")}
+        >
+          Notícias
         </button>
       </nav>
 
@@ -85,7 +94,7 @@ export default function Dashboard() {
               <h2 className="match-group__date">{day}</h2>
               <div className="match-group__grid">
                 {matches.map((m) => (
-                  <MatchCard key={m.id} match={m} />
+                  <MatchCard key={m.id} match={m} onClick={() => setSelectedMatch(m.id)} />
                 ))}
               </div>
             </section>
@@ -99,6 +108,12 @@ export default function Dashboard() {
             <StandingsTable key={l.api_id} leagueApiId={l.api_id} leagueName={l.name} />
           ))}
         </div>
+      )}
+
+      {activeTab === "news" && <NewsTab />}
+
+      {selectedMatch && (
+        <MatchModal matchId={selectedMatch} onClose={() => setSelectedMatch(null)} />
       )}
     </div>
   );

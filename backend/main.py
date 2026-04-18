@@ -8,7 +8,7 @@ from sqlalchemy import text
 
 from database import init_db, SessionLocal
 from scheduler import start_scheduler
-from routers import matches, standings
+from routers import matches, standings, news
 
 load_dotenv()
 
@@ -57,6 +57,7 @@ app.add_middleware(
 
 app.include_router(matches.router,   prefix="/api/v1")
 app.include_router(standings.router, prefix="/api/v1")
+app.include_router(news.router,      prefix="/api/v1")
 
 
 @app.get("/api/v1/health")

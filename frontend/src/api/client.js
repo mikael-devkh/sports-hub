@@ -17,4 +17,10 @@ export const api = {
     get("/matches/recent", { days }),
   standings: (leagueApiId, season = 2025) =>
     get(`/standings/${leagueApiId}`, { season }),
+  matchDetail: (id) =>
+    get(`/matches/detail/${id}`),
+  newsTeams: () =>
+    get("/news/teams"),
+  teamNews: (teamKey, limit = 20) =>
+    get(`/news/${teamKey}`, { limit }),
 };

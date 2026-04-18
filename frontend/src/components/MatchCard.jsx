@@ -22,7 +22,7 @@ function formatDateTime(iso) {
   };
 }
 
-export default function MatchCard({ match }) {
+export default function MatchCard({ match, onClick }) {
   const { date, time } = useMemo(() => formatDateTime(match.scheduled_at), [match.scheduled_at]);
   const isLive    = ["1H", "HT", "2H", "AET", "PEN"].includes(match.status);
   const isFinished = match.status === "FT";
@@ -30,8 +30,12 @@ export default function MatchCard({ match }) {
 
   return (
     <div
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
       className={[
         "match-card",
+        onClick && "match-card--clickable",
         isLive     && "match-card--live",
         isFinished && "match-card--finished",
         match.home_team.tracked || match.away_team.tracked ? "match-card--tracked" : "",
@@ -73,12 +77,13 @@ export default function MatchCard({ match }) {
       </div>
 
       {/* Canais de TV */}
-      {match.broadcast.length > 0 && (
-        <div className="match-card__broadcast">
-          <span className="match-card__broadcast-icon">📺</span>
-          {match.broadcast.join(" · ")}
-        </div>
-      )}
+      <div className="match-card__broadcast">
+        <span className="match-card__broadcast-icon">📺</span>
+        {match.broadcast.length > 0
+          ? match.broadcast.join(" · ")
+          : <span style={{color:"var(--muted)"}}>Transmissão não disponível</span>
+        }
+      </div>
 
       {match.venue && (
         <div className="match-card__venue">📍 {match.venue}</div>

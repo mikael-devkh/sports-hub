@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from database import get_db
+from datetime import datetime
 
 router = APIRouter(prefix="/standings", tags=["standings"])
 
@@ -9,9 +10,17 @@ router = APIRouter(prefix="/standings", tags=["standings"])
 @router.get("/{league_api_id}")
 async def get_standings(
     league_api_id: int,
-    season: int = Query(2025),
+    season: int = Query(None),
     db: AsyncSession = Depends(get_db),
 ):
+    # Se season não especificado, usa o mais recente disponível no banco
+    if not season:
+        r = await db.execute(
+            text("SELECT MAX(s.season) FROM standings s JOIN leagues l ON l.id = s.league_id WHERE l.api_id = :lid"),
+            {"lid": league_api_id},
+        )
+        season = r.scalar() or datetime.now().year
+
     sql = text("""
         SELECT
             s.position, s.played, s.won, s.drawn, s.lost,

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from datetime import datetime, timezone, timedelta
@@ -90,3 +90,20 @@ async def recent_matches(
     )
     result = await db.execute(sql, {"since": since})
     return [_row_to_match(r) for r in result.fetchall()]
+
+
+@router.get("/detail/{match_id}")
+async def match_detail(match_id: int, db: AsyncSession = Depends(get_db)):
+    sql = text(f"{_MATCH_SELECT} WHERE m.id = :mid")
+    result = await db.execute(sql, {"mid": match_id})
+    row = result.fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="match not found")
+    base = _row_to_match(row)
+    base["status_label"] = {
+        "NS": "Agendado", "FT": "Encerrado", "1H": "1º Tempo",
+        "HT": "Intervalo", "2H": "2º Tempo", "AET": "Prorrogação",
+        "PEN": "Pênaltis", "CANC": "Cancelado", "PST": "Adiado",
+    }.get(row.status, row.status)
+    base["lineups"] = {"home": [], "away": []}
+    return base
