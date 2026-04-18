@@ -26,13 +26,16 @@ LEAGUE_MAP = {
 
 # Nomes dos times que rastreamos de perto (como aparecem na football-data.org)
 TRACKED_NAMES = {
-    "São Paulo FC", "Santos FC",
-    "Sport Club Corinthians Paulista", "Corinthians",
-    "Sociedade Esportiva Palmeiras", "Palmeiras",
-    "Club de Regatas do Flamengo", "Flamengo",
-    "FC Barcelona", "Barcelona",
-    "Manchester City FC", "Manchester City",
-    "FC Bayern München", "Bayern München",
+    # Brasileiros (nomes como aparecem no football-data.org)
+    "São Paulo FC",
+    "Santos FC",
+    "SC Corinthians Paulista",
+    "SE Palmeiras",
+    "CR Flamengo",
+    # Europeus
+    "FC Barcelona",
+    "Manchester City FC",
+    "FC Bayern München",
 }
 
 
@@ -141,10 +144,6 @@ async def fetch_fixtures_for_league(db: AsyncSession, league_api_id: int) -> int
     for m in data.get("matches", []):
         home = m.get("homeTeam", {})
         away = m.get("awayTeam", {})
-
-        # Pula se nem time casa nem visitante é rastreado
-        if not _is_tracked(home.get("name", "")) and not _is_tracked(away.get("name", "")):
-            continue
 
         if not home.get("id") or not away.get("id"):
             continue
