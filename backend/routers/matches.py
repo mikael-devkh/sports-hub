@@ -51,7 +51,7 @@ async def upcoming_matches(
     Retorna jogos dos próximos N dias dos times/campeonatos rastreados.
     Filtro: apenas jogos onde ao menos um time tem tracked=1.
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
     end = now + timedelta(days=days)
 
     filters = ["m.scheduled_at BETWEEN :now AND :end", "m.status = 'NS'",
@@ -83,7 +83,7 @@ async def recent_matches(
     db: AsyncSession = Depends(get_db),
 ):
     """Últimos resultados."""
-    since = datetime.now(timezone.utc) - timedelta(days=days)
+    since = datetime.utcnow() - timedelta(days=days)
     sql = text(
         f"{_MATCH_SELECT} WHERE m.status = 'FT' AND m.scheduled_at >= :since "
         "AND (ht.tracked = TRUE OR at.tracked = TRUE) ORDER BY m.scheduled_at DESC"

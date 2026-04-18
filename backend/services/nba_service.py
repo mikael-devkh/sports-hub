@@ -48,9 +48,7 @@ async def fetch_celtics_schedule(db: AsyncSession, season: str = "2024-25"):
 
     saved = 0
     for _, row in df.iterrows():
-        game_date = datetime.strptime(str(row["GAME_DATE"]), "%b %d, %Y").replace(
-            tzinfo=timezone.utc
-        )
+        game_date = datetime.strptime(str(row["GAME_DATE"]), "%b %d, %Y")
         matchup: str = row["MATCHUP"]  # ex: "BOS vs. MIA" ou "BOS @ MIA"
         is_home = "vs." in matchup
         opp_abbr = matchup.split()[-1]

@@ -106,7 +106,7 @@ async def fetch_fixtures_for_team(db: AsyncSession, team_api_id: int, season: in
         home_id = await _upsert_team(db, teams["home"])
         away_id = await _upsert_team(db, teams["away"])
 
-        scheduled = datetime.fromisoformat(fix["date"].replace("Z", "+00:00"))
+        scheduled = datetime.fromisoformat(fix["date"].replace("Z", "+00:00")).replace(tzinfo=None)
 
         await db.execute(
             text("""

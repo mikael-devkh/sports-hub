@@ -117,7 +117,7 @@ async def enrich_broadcasts(db: AsyncSession):
 
         name_filter = home_name or away_name
         try:
-            match_date = datetime.strptime(item["date"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            match_date = datetime.strptime(item["date"], "%Y-%m-%d")
         except ValueError:
             continue
 
