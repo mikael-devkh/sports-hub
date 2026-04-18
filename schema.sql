@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS leagues (
     name       TEXT    NOT NULL,
     sport      TEXT    NOT NULL CHECK (sport IN ('football', 'basketball')),
     country    TEXT,
-    api_id     INTEGER UNIQUE,
+    api_id     BIGINT UNIQUE,
     season     INTEGER NOT NULL,
     logo_url   TEXT,
     updated_at TIMESTAMP DEFAULT NOW()
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS teams (
     name       TEXT    NOT NULL,
     short_name TEXT,
     sport      TEXT    NOT NULL CHECK (sport IN ('football', 'basketball')),
-    api_id     INTEGER UNIQUE,
+    api_id     BIGINT UNIQUE,
     logo_url   TEXT,
     country    TEXT,
     tracked    BOOLEAN NOT NULL DEFAULT FALSE

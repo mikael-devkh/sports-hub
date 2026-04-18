@@ -58,3 +58,14 @@ async def init_db():
         for stmt in statements:
             # exec_driver_sql: passa SQL cru sem parsing de :parametros
             await conn.exec_driver_sql(stmt)
+
+        # Migrações idempotentes para tabelas antigas
+        await conn.exec_driver_sql(
+            "ALTER TABLE matches  ALTER COLUMN api_id TYPE BIGINT"
+        )
+        await conn.exec_driver_sql(
+            "ALTER TABLE leagues  ALTER COLUMN api_id TYPE BIGINT"
+        )
+        await conn.exec_driver_sql(
+            "ALTER TABLE teams    ALTER COLUMN api_id TYPE BIGINT"
+        )
