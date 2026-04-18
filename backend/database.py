@@ -41,11 +41,20 @@ async def get_db() -> AsyncSession:
 
 async def init_db():
     schema_path = Path(__file__).parent.parent / "schema.sql"
-    statements = [
-        s.strip()
-        for s in schema_path.read_text().split(";")
-        if s.strip() and not s.strip().startswith("--")
-    ]
+    raw = schema_path.read_text(encoding="utf-8")
+
+    # Remove linhas de comentário preservando o SQL ao redor
+    cleaned_lines = []
+    for line in raw.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("--") or not stripped:
+            continue
+        cleaned_lines.append(line)
+    cleaned = "\n".join(cleaned_lines)
+
+    statements = [s.strip() for s in cleaned.split(";") if s.strip()]
+
     async with engine.begin() as conn:
         for stmt in statements:
-            await conn.execute(text(stmt))
+            # exec_driver_sql: passa SQL cru sem parsing de :parametros
+            await conn.exec_driver_sql(stmt)
