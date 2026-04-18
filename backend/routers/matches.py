@@ -55,7 +55,7 @@ async def upcoming_matches(
     end = now + timedelta(days=days)
 
     filters = ["m.scheduled_at BETWEEN :now AND :end", "m.status = 'NS'",
-               "(ht.tracked = 1 OR at.tracked = 1)"]
+               "(ht.tracked = TRUE OR at.tracked = TRUE)"]
     params: dict = {"now": now, "end": end}
 
     if sport:
@@ -86,7 +86,7 @@ async def recent_matches(
     since = datetime.now(timezone.utc) - timedelta(days=days)
     sql = text(
         f"{_MATCH_SELECT} WHERE m.status = 'FT' AND m.scheduled_at >= :since "
-        "AND (ht.tracked = 1 OR at.tracked = 1) ORDER BY m.scheduled_at DESC"
+        "AND (ht.tracked = TRUE OR at.tracked = TRUE) ORDER BY m.scheduled_at DESC"
     )
     result = await db.execute(sql, {"since": since})
     return [_row_to_match(r) for r in result.fetchall()]
