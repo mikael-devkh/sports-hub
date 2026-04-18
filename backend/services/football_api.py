@@ -3,6 +3,7 @@ Fetcher para API-Football (RapidAPI).
 Documentação: https://www.api-football.com/documentation-v3
 Limite free tier: 100 req/dia — por isso salvamos tudo no banco.
 """
+import json
 import os
 import httpx
 from datetime import datetime, timezone, timedelta
@@ -117,7 +118,7 @@ async def fetch_fixtures_for_team(db: AsyncSession, team_api_id: int, season: in
                 VALUES
                     (:api_id, 'football', :league_id, :home_id, :away_id,
                      :sched, :venue, :status, :hs, :as_, :season,
-                     :broadcast, 'api', CURRENT_TIMESTAMP)
+                     CAST(:broadcast AS JSONB), 'api', NOW())
                 ON CONFLICT(api_id) DO UPDATE SET
                     status       = excluded.status,
                     home_score   = excluded.home_score,
@@ -138,7 +139,7 @@ async def fetch_fixtures_for_team(db: AsyncSession, team_api_id: int, season: in
                 "hs":        goals.get("home"),
                 "as_":       goals.get("away"),
                 "season":    season,
-                "broadcast": broadcast_list,
+                "broadcast": json.dumps(broadcast_list),
             },
         )
         saved += 1

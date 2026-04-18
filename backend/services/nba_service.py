@@ -90,7 +90,7 @@ async def fetch_celtics_schedule(db: AsyncSession, season: str = "2024-25"):
                     (api_id, sport, league_id, home_team_id, away_team_id,
                      scheduled_at, status, season, broadcast, fetched_at)
                 VALUES (:aid, 'basketball', :lid, :home, :away,
-                        :sched, :status, :season, :broadcast, NOW())
+                        :sched, :status, :season, CAST(:broadcast AS JSONB), NOW())
                 ON CONFLICT(api_id) DO UPDATE SET
                     status     = excluded.status,
                     fetched_at = CURRENT_TIMESTAMP
@@ -103,7 +103,7 @@ async def fetch_celtics_schedule(db: AsyncSession, season: str = "2024-25"):
                 "sched":  game_date,
                 "status": status,
                 "season": 2025,
-                "broadcast": ["NBA League Pass"],
+                "broadcast": json.dumps(["NBA League Pass"]),
             },
         )
         saved += 1
