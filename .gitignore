@@ -1,0 +1,13 @@
+# Secrets — NUNCA commitar
+backend/.env
+backend/sports.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+frontend/node_modules/
+frontend/dist/
