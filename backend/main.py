@@ -65,6 +65,22 @@ async def health():
     return {"status": "ok"}
 
 
+@app.get("/api/v1/admin/debug")
+async def debug():
+    from sqlalchemy import text
+    async with SessionLocal() as db:
+        leagues = (await db.execute(text("SELECT id, api_id, name FROM leagues"))).fetchall()
+        matches_count = (await db.execute(text("SELECT COUNT(*) FROM matches"))).scalar()
+        api_key_set = bool(os.getenv("API_FOOTBALL_KEY"))
+        api_key_preview = os.getenv("API_FOOTBALL_KEY", "")[:8] + "..."
+    return {
+        "api_key_set": api_key_set,
+        "api_key_preview": api_key_preview,
+        "leagues": [{"id": r[0], "api_id": r[1], "name": r[2]} for r in leagues],
+        "matches_count": matches_count,
+    }
+
+
 @app.post("/api/v1/admin/sync")
 async def manual_sync(target: str = "all"):
     from services.football_api import fetch_all_leagues_fixtures, fetch_all_standings
