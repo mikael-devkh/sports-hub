@@ -5,7 +5,7 @@ asyncpg==0.30.0
 httpx==0.28.1
 apscheduler==3.10.4
 python-dotenv==1.1.0
-nba_api==1.9.1
+nba_api==1.11.4
 beautifulsoup4==4.13.4
 lxml==5.4.0
 pydantic==2.11.4
